@@ -1,0 +1,75 @@
+/*
+** RELEASE STATEMENT(s):
+** 								UNLIMITED RIGHTS
+** The Government has the right to use, modify, reproduce, release, perform,
+** display, or disclose this application programmable interface in whole or in
+** part, in any manner and for any purpose whatsoever, and to have or
+** authorize others to do so.
+**
+** Statement A - Approved for public release; distribution is unlimited (29 July 2014).
+*/
+
+/*
+** JTNC STANDARD SPECIFICATION:
+** Modem Hardware Abstraction Layer API, Version: 3.0, 02 Oct 2013
+** SCA Mhal Gpp Api Extension
+**
+** API CATEGORY:
+** JTNC Complex API
+*/
+
+/*
+** SCAMhalDevice.idl
+*/
+
+#ifndef __SCAMHALDEVICE_DEFINED
+#define __SCAMHALDEVICE_DEFINED
+
+#ifndef __JTRSCORBATYPES_DEFINED
+#include <redhawk/JTRS/JtrsCorbaTypes.idl>
+#endif
+
+#ifndef __PACKET_DEFINED
+#include <redhawk/PACKET/Packet.idl>
+#endif
+
+module SCAMHAL {
+
+	interface SCAMHALPacketConsumer : Packet::PayloadStatus {
+	
+		void pushPacket (
+			in unsigned short logicalDest,
+			in JTRS::OctetSequence payload
+		);
+	};
+	
+	// Known SCAMHAL Physical Destination Types
+	typedef JTRS::ExtEnum SCAMHALPhysicalDestination;
+	const SCAMHALPhysicalDestination SCAMHALPhysicalDestination_NONE = 0;
+	const SCAMHALPhysicalDestination PHYSICAL_DESTINATION_DSP = 1;
+	const SCAMHALPhysicalDestination PHYSICAL_DESTINATION_FPGA = 2;
+	const SCAMHALPhysicalDestination PHYSICAL_DESTINATION_GPP = 3;
+	
+	interface PF_SCAMHALPacketConsumer : SCAMHALPacketConsumer {
+		// Following type and consts are DEPRECATED 27-August-2009 - Use versions scoped to SCAMHAL module!
+		typedef SCAMHAL::SCAMHALPhysicalDestination SCAMHALPhysicalDestination;
+		const SCAMHALPhysicalDestination SCAMHALPhysicalDestination_NONE = 0;
+		const SCAMHALPhysicalDestination PHYSICAL_DESTINATION_DSP = 1;
+		const SCAMHALPhysicalDestination PHYSICAL_DESTINATION_FPGA = 2;
+		const SCAMHALPhysicalDestination PHYSICAL_DESTINATION_GPP = 3;
+		
+		void addTxRoute (
+			in unsigned short logicalDest,
+			in SCAMHAL::SCAMHALPhysicalDestination physicalDest
+		);
+	};
+	
+	interface WF_SCAMHALPacketConsumer : SCAMHALPacketConsumer {
+		typedef sequence<unsigned short> RxRouteSequence;
+		
+		SCAMHAL::WF_SCAMHALPacketConsumer::RxRouteSequence getRxRoutes();
+	};
+	
+};
+
+#endif
